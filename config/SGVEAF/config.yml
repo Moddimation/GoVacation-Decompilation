@@ -1,0 +1,12 @@
+name: gvn
+object_base: orig/SGVEAF
+object: sys/main.dol
+hash: 8c7029e5053d51d85678e64957db1e0473bf72ab
+symbols: config/SGVEAF/symbols.txt
+splits: config/SGVEAF/splits.txt
+write_asm: true
+mw_comment_version: 14
+
+quick_analysis: false
+detect_objects: true
+detect_strings: true

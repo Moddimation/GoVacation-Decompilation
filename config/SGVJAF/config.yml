@@ -1,0 +1,12 @@
+name: gvn
+object_base: orig/SGVJAF
+object: sys/main.dol
+hash: 8c54fdcd2fb4f97cbcf8617979c654d63d8b7523
+symbols: config/SGVJAF/symbols.txt
+splits: config/SGVJAF/splits.txt
+write_asm: true
+mw_comment_version: 14
+
+quick_analysis: false
+detect_objects: true
+detect_strings: true

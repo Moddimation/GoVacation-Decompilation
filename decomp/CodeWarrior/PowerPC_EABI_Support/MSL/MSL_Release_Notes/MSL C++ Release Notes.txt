@@ -1,0 +1,489 @@
+===============================================================================
+MSL C++ Release Notes
+===============================================================================
+Version: 12.0
+Date:    August 16, 2005
+Author:  Cecilia Galvan, Michael Marcotty, Ron Liechty, Howard Hinnant,
+         Josef W. Wankerl
+===============================================================================
+Current version is:                                (__MSL_CPP__ == 0x00012000).
+These release notes document changes since Version 9.4 (__MSL_CPP__ == 0x9400).
+===============================================================================
+
+===============================================================================
+New Features Since Core 9.0
+===============================================================================
+
+*   Move semantics
+
+    This is a full implementation of the rvalue reference (move semantics and
+    perfect forwarding) proposal.  It is off by default, but can be enabled
+    with:
+
+#pragma rvalue_refs on
+    
+    A library recomile is not needed when flipping this switch.
+    
+    Background reference material:
+    
+    http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2002/n1377.htm
+    http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2002/n1385.htm
+    http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2004/n1690.html
+    http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1770.html
+    http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1771.html
+
+    With this feature enabled, containers such as vector will use move semantics
+    when moving around elements internally, resulting in dramatic performance
+    increases.  Containers will also be capable of holding movable but
+    non-copyable elements such as Metrowerks::move_ptr.
+    
+*   The following algorithms make use of only the proposed Swappable
+    requirement (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2003/n1523.htm).
+    You can customize swap by overloading it for your types in the same
+    namespace as your type's definition.  Because these algorithms only use the
+    Swappable concept, they do not require CopyConstructible or CopyAssignable
+    as long as the custom swap that you supply does not require these concepts.
+
+        swap_ranges
+        iter_swap
+        reverse
+        random_shuffle
+        partition
+        next_permutation
+        prev_permutation
+
+*   With #pragma rvalue_refs on, the following algorithms use move semantics
+    to move elements around instead of copy semantics.  For heavy weight elements
+    this results in dramatic performance increases (e.g. vector<vector<T>>).
+    It also allows the algorithms to work with movable but non-copyable elements
+    (e.g. Metrowerks::move_ptr, std::stringstreams, Metrowerks::scoped_lock).
+
+        swap
+        remove
+        remove_if
+        unique
+        rotate
+        stable_partition
+        sort
+        stable_sort
+        partial_sort
+        nth_element
+        inplace_merge
+        push_heap
+        pop_heap
+        make_heap
+        sort_heap
+
+    You can make your own resource-owning classes cheaply movable by
+    including a move constructor and move assignment operator (for example):
+
+#pragma rvalue_refs on // must turn language feature on
+
+#include <string>
+#include <utility>     // for std::move
+        
+        class MyType
+        {
+public:
+    MyType();
+    explicit MyType (int data);
+    ~MyType();
+
+    // copy semantics
+    MyType (const MyType& x);
+    MyType& operator= (const MyType& x);
+
+#ifdef _MSL_MOVE // only this part is added to your class!
+    // move semantics
+    MyType (MyType && x)           // move constructor
+      : name_ (std::move (x.name_)),
+        data_ (x.data_)
+    {
+        x.data_ = 0;
+    }
+
+    MyType& operator= (MyType&& x) // move assignment
+    {
+        swap (x);
+        return *this;
+    }
+#endif                             // _MSL_MOVE
+
+    void swap (MyType&);
+
+private:
+    std::string name_;
+    int*        data_;
+        };
+        
+        // Everything below is just example code that supports the
+        //     existing copy semantics - nothing new
+        
+        inline void swap(MyType& x, MyType& y) {
+    x.swap (y);}
+        
+        inline
+        MyType::MyType()
+            : data_(0)
+        {
+        }
+        
+        inline
+        MyType::MyType(int data)
+            : name_("some name"),
+              data_(new int(data))
+        {
+        }
+        
+        inline
+        MyType::~MyType()
+        {
+    delete data_;
+        }
+        
+        // copy semantics
+        
+        MyType::MyType(const MyType& x)
+            : name_(x.name_),
+              data_(x.data_)
+        {
+    if (x.data_)
+        data_ = new int (*x.data_);
+        }
+        
+        MyType&
+        MyType::operator=(const MyType& x)
+        {
+    if (this != &x)
+    {
+        name_ = x.name_;
+        if (data_ == 0)
+        {
+            if (x.data_ != 0)
+                data_ = new int (*x.data_);
+        }
+        else
+        {
+            if (x.data_ != 0)
+                *data_ = *x.data_;
+            else
+            {
+                delete data_;
+                data_ = 0;
+            }
+        }
+    }
+    return *this;
+        }
+        
+        void
+        MyType::swap(MyType& x)
+        {
+    std::swap (name_, x.name_);
+    std::swap (data_, x.data_);
+        }
+
+// Exercise MyType
+
+#include <vector>
+        
+        int main()
+        {
+    MyType              x1 (1);
+    MyType              x2 (x1);             // slow copy
+    MyType              x3 (std::move (x1)); // fast move
+    std::vector<MyType> v;
+    v.push_back (std::move (x3));            // x3 moved into v - fast
+    v.push_back (MyType (4));                // Temporary MyType(4) moved into v - fast
+        }
+            
+        
+*   Two new algorithms:
+
+        template <class InputIterator, class OutputIterator>
+        OutputIterator
+        move(InputIterator first, InputIterator last, OutputIterator result);
+
+        template <class BidirectionalIterator1, class BidirectionalIterator2>
+        BidirectionalIterator2
+        move_backward(BidirectionalIterator1 first, BidirectionalIterator1 last,
+                      BidirectionalIterator2 result);
+
+    These are analogous to copy and copy_backward but they will move from
+    the input range instead of copy from it.
+
+*   bind ( http://std.dkuug.dk/jtc1/sc22/wg21/docs/papers/2003/n1455.htm ) is a
+    new library voted into the first Library Technical Report. As such, it is
+    placed in namespace std::tr1. It is not standard, but is considered
+    "interesting" by the C++ committee. It may become standardized in the
+    future. This is a generalization of the existing std::bind1st and
+    std::bind2nd functions.  It appears in a new header:  <bind>.
+    If #pragma rvalue_refs on, then bind will perfectly forward both rvalue
+    and lvalue arguements to the underlying functor.  Without this language
+    feature bind will only forward lvalue arguments and rvalue arguments will
+    result in a compile-time error.
+
+*   mem_fn ( http://std.dkuug.dk/jtc1/sc22/wg21/docs/papers/2003/n1432.htm ) is
+    a library that has been voted into the first Library Technical Report. As
+    such, it is placed in namespace std::tr1. It is not standard, but is
+    considered "interesting" by the C++ committee. It may become standardized
+    in the future. mem_fn is a generalization of the standard functions
+    std::mem_fun and std::mem_fun_ref.  It appears in the header <functional>.
+
+*   vector modified to detect and take advantage of "version 2" allocator
+    interface.  This is an experimental Metrowerks extension of the standard
+    allocator interface which allows clients to expand a block in place, and
+    to report the actual size of an allocated block.  An example "version 2"
+    allocator (Metrowerks::malloc_alloc) is provided in <memory>.  When
+    std::vector<T, Metrowerks::malloc_alloc<T> > is used on top of MSL C, the
+    vector will work in cooperation with the underlying malloc heap to use
+    memory in the most efficient way possible.  The vector will take advantage
+    of excess memory returned from malloc (if any).  And the vector will
+    expand a block of memory in place when the underlying malloc system allows
+    it.
+
+*   New addition to the Metrowerks::threads library:  rw_mutex.  This is a
+    read/write mutex with nested types sharable_lock and scoped_lock.  These locks
+    will lock the rw_mutex in sharable (read) mode and exclusive (write) mode
+    respectively.  Accessible via <msl_thread> in namespace Metrowerks.  If
+#pragma rvalue_refs on, an rw_mutex::upgradable_lock is also available
+    which is a sharable lock which can be upgraded (using std::move()) to a
+    scoped_lock (exclusive access).
+
+#pragma rvalue_refs on
+
+#include <msl_thread>
+        
+        typedef Metrowerks::rw_mutex   Mutex;
+        typedef Mutex::scoped_lock     WriteLock;
+        typedef Mutex::sharable_lock   ReadLock;
+        typedef Mutex::upgradable_lock UpgradableLock;
+        
+        Mutex mut;
+
+        void foo()
+        {
+    UpgradableLock rlock (mut);
+    // Read access here, allows other threads to lock ReadLock
+    // ...
+    if (some_condition)
+    {
+        WriteLock wlock (std::move (rlock));
+        // Write access here, atomically upgraded from rlock
+        // Guaranteed that what was read is still valid
+        // ...
+    }
+        }
+
+*   New lock and try_lock algorithms in namespace Metrowerks:
+
+        template <class TryLock1, class TryLock2, ...>
+        void
+        lock(TryLock1& l1, TryLock2& l2, ...)
+
+
+        template <class TryLock1, class TryLock2, ...>
+        unsigned
+        try_lock(TryLock1& l1, TryLock2& l2, ...)
+
+    These will lock (or try-lock) from 2 to 4 locks without risk of deadlock
+    (assuming no locks are currently held by the thread).  The try_lock
+    variant returns 0 if all locks were locked.  Otherwise it returns an
+    unsigned value in the range (1 ... 4) indicating which lock could not be
+    try-locked.  And in this case, all locks will be left unlocked.
+
+#include <msl_thread>
+        
+        class A
+        {
+public:
+    // ...
+    A& operator= (const A& a);
+    // ...
+
+private:
+    typedef Metrowerks::rw_mutex Mutex;
+    typedef Mutex::scoped_lock   WriteLock;
+    typedef Mutex::sharable_lock ReadLock;
+
+    mutable Mutex mut_;
+    // ...
+        };
+        
+        A&
+        A::operator=(const A& a)
+        {
+    if (this != &a)
+    {
+        ReadLock  rlock (a.mut_, Metrowerks::defer_lock);
+        WriteLock wlock (mut_, Metrowerks::defer_lock);
+        Metrowerks::lock (rlock, wlock);
+        // *this is write-locked, and "a" is read-locked.
+        // Even if another thread is concurrently trying to
+        // assign *this to "a", (trying to lock the mutexes
+        // in opposite order) this code won't deadlock.
+        // ...
+    }
+    return *this;
+        }
+
+*  std::tr1::array<class T, size_t N> found in <array>.  This is a library which
+   has been voted into the Library Technical Report 1 (TR1) with a few minor
+   modifications from the proposal:
+       http://anubis.dkuug.dk/jtc1/sc22/wg21/docs/papers/2003/n1548.htm
+
+   The differences include:
+   
+   1.  The data member elems is not in the user interface.  The data is public
+       in order to provide aggregate-style initialization, but the name of the
+       public data member is implemenation defined, and in this case,
+       undocumented.  The data should be accessed through the public interface
+       and not directly (there is no loss in efficiency or code size penalty).
+
+   2.  array<T, 0> is legal and will compile.  One can construct such an array
+       and query its size.  Attempting to access an element will lead to
+       implementation defined behavior.  In release mode the null pointer will
+       be dereferenced, causing a page fault on those platforms which support
+       such behavior.
+       
+   3.  If _MSL_DEBUG is on then accessing an element that is out of range will
+        cause the following macro to be called:
+       
+       _MSL_DEBUG_ERROR(std::out_of_range, "array::[] index out of range");
+       
+       The default behavior of this macro is throw a std::out_of_range exception
+       constructed with the indicated literal.  You are free to redefine this
+       macro to do other things.  Your definition will override that found in
+       <mslconfig> if your definition is created prior to that in <mslconfig> in
+       the transluation unit.
+
+   4.  If <tuple> (or <tupleio>) is included then array is considered
+       "tuple-like" similar to std::pair.  This means that you may use
+       tuple_size, tuple_element, and get<I> on arrays.  The get<I> function is
+       range checked at compile time.  For example:
+
+#include <array>
+#include <iostream>
+#include <tuple>
+#include <tupleio>
+
+        int main()
+        {
+    typedef std::tr1::array<int, 3> A3;
+    A3                              ar = { 1, 2, 3 };
+    std::cout << ar << '\n';
+    std::tr1::get<0> (ar) = 4;
+    std::tr1::get<1> (ar) = 5;
+    std::tr1::get<2> (ar) = 6;
+    //  std::tr1::get<3>(ar) = 7;  will not compile
+    std::cout << std::tr1::tuple_size<A3>::value << '\n';
+    std::cout << std::tr1::tuple_open ('[') << std::tr1::tuple_delimiter (", ")
+              << std::tr1::tuple_close (']');
+    std::cout << ar << '\n';
+        }
+        
+        produces:
+        
+        (1 2 3)
+        3
+        [4, 5, 6]
+
+*   Optimized std::ostringstream to be *much* faster after it internally
+    reallocates its buffer.  This is currently slightly non-standard behavior,
+    but we're working on that aspect with the standards committee.  Unless you
+    derive from std::basic_stringbuf, and monitor the protected buffer
+    pointers, the only difference you will notice is higher performance.
+
+*   A new to_string overload has been added to bitset:
+    string to_string() const;
+    This is a convenience function for calling:
+    std::string s1 = b.template to_string<char, std::char_traits<char>,
+                                          std::allocator<char> >();
+	std::string s2 = b.to_string();  // now ok
+	For completeness, the following overloads are also available (but are not
+	new):
+    std::string s3 = b.template to_string<char>();
+    std::string s4 = b.template to_string<char, std::char_traits<char> >();
+
+*  The integral manipulator functions found in <algorithm> under namespace
+   Metrowerks have been expanded to operate on all integral types (they
+   previously only worked with unsigned int).
+   
+   namespace Metrowerks
+   {
+    template <class Int>
+    unsigned count_bits (Int x);
+    template <class Int>
+    unsigned count_leading_zero (Int x);
+    template <class Int>
+    unsigned count_trailing_zero (Int x);
+    template <class Int>
+    unsigned count_leading_one (Int x);
+    template <class Int>
+    unsigned count_trailing_one (Int x);
+    template <class Int>
+    T rotate_left (Int x, int n = 1);
+    template <class Int>
+    T rotate_right (Int x, int n = 1);
+   
+   }  // Metrowerks
+
+   The purpose of these functions is to give uniform access to a few useful
+   assembly instructions when they are available, and to also provide reasonably
+   efficient implementation even when the platform does not provide special
+   hardware support.  For example all of the count_leading_xxx and
+   count_trailing_xxx functions make use of the cntlzw instruction on PPC.
+
+*   has_facet and use_facet will now work with const qualified facets.
+
+*   Modest valarray speed optimizations.
+
+*  Implemented lwg issue 426 which gives search_n(), fill_n(), and generate_n()
+   well defined semantics for negative n (behaves as if n is 0).
+
+*  Implemented lwg issue 409.  The error bits on file-based streams are now
+   cleared upon successful open.
+
+*   rotate now returns new middle of rotated sequence (implementation of
+    http://www.open-std.org/jtc1/sc22/wg21/docs/lwg-active.html#488 ).
+
+*   map/multimap/set/multiset erase member function now returns iterator to
+    next element (lwg issue 130).
+
+*   stable_partition optimized for better run time performance.
+
+*   sort compare predicate can be stateful without loosing information.
+
+        
+===============================================================================
+Bugs fixed Since Core 9.0
+===============================================================================
+
+*   The template function:
+    swap(__bit_reference<Container> x, __bit_reference<Container> y);
+    has been restricted to container types.
+
+*   Removed extraneous uses of typename in cdeque, deque, functional, list, and
+    vector.
+
+*   Added cast to protect against a signed internT in __ucs_2<internT>::do_in.
+
+*   Added missing const member function specialization to signature in
+    <functional> to aid std::tr1::result_of.
+
+*   Metrowerks::msl_bufferedbuf::flush_put now does not demand that source
+    characters are consumed by the codecvt's put() function.  This allows
+    greater flexibility with state-based code conversions.
+
+*   FILE* based streams now have a sync() override that specifically fflushes
+    the underlying FILE*.
+
+*   Fixed return type of std::tr1::shared_ptr::operator*() to handle
+    shared_ptr<void>.
+
+*   Protected std::tr1::shared_ptr stream inserter under _MSL_NO_IO.
+
+
+        
+===============================================================================
+Freescale Corporation

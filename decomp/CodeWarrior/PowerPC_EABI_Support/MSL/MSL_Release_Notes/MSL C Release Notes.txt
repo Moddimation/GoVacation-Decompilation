@@ -1,0 +1,102 @@
+===============================================================================
+MSL C Release Notes
+===============================================================================
+
+Version: 13.0
+Date:    August 16, 2006
+Author:  Cecilia Galvan, Michael Marcotty, Ron Liechty, Howard Hinnant,
+         Josef W. Wankerl
+         
+===============================================================================
+Current version is:                              (__MSL__ == 0x00013000).
+These release notes document changes since 		 (__MSL__ == 0x00011000).
+===============================================================================
+
+===============================================================================
+New Features
+===============================================================================
+
+===============================================================================
+MSL C Common
+===============================================================================
+
+
+*   Complex support has been added to MSL C.  The flag _MSL_COMPLEX has been 
+    provided to enable the support.
+
+
+* 	Support for TR 24731 - Safer C library functions.  The 
+	__STDC_WANT_LIB_EXT1__ proposal to the C standard.  The following safer 
+	library routines have been added:  
+	
+	bsearch_s, qsort_s, wctomb_s, wcstombs_s, mbstowcs_s, fprintf_s, fscanf_s, 
+	scanf_s, snprintf_s, sprintf_s, sscanf_s, vfprintf_s, vfscanf_s, vprintf_s, 
+	vsnprintf_s, vsprintf_s, vsscanf_s, gets_s, fopen_s, tmpfile_s, tmpnam_s,
+	printf_s, bsearch_s, qsort_s, getenv_s, wctomb_s, mbstowcs_s, memcpy_s, 
+	memmove_s, strnlen_s, strcpy_s, strncpy_s, strcat_s, strncat_s, strerror_s, 
+	strtok_r, asctime_s, ctime_s, gmtime_s, localtime_s, wmemcpy_s, wmemmove_s, 
+	fwprintf, _swprintf_s, snwprintf_s,swprintf_s,vfwprintf_s,vsnwprintf_s, 
+	vswprintf_s, vwprintf_s, wcsnlen, wcscpy_s, wcsncpy_s, wcscat_s, wcsncat_s, 
+	fwscan_s, wscanf_s, swscanf_s, vswscanf_s, vfwscanf_s, vwscanf_s, 
+	wcstombs_s, wcrtomb_s, mbsrtowcs_s, wcsrtombs_s...
+
+
+* 	Updated conformance to ISO C99 Standard, ISO/IEC 9899:1999 and 
+	Technical Corrigendum 1 and Technical Corrigendum 2
+	
+
+===============================================================================
+MSL C Product Based
+===============================================================================
+
+
+*   ARM ABI standardization support has been added to MSL C.  The flag 
+	_AEABI_PORTABILITY_LEVEL has been provided to enable the support.
+	
+	
+*   Support for ColdFire has split from E68K 
+
+	
+===============================================================================
+Bugs Fixed in MSL C Common
+===============================================================================
+
+*   The following function have been fixed to conform to the C99 Standard
+
+	getchar				getwchar			erf					mbsrtowcs		
+	wcsrtombs			mbsinit				erfc				erff				
+	erfcf				erfl			 	erfcl				tgammal				
+	long2str			double2hex			__strtold			strtold			
+	strtod				strtof				__wcstoul			__wcstoull
+	wcstoul				wcstoull			__wpformatter		acos			
+	asin				atah				feclearexcept		fegetexceptflag		
+	fesetexceptflag 	fegetexcept			feraiseexcept 		fegetenv 			
+	fesetenv 			feupdateenv			__wcstold			wcstold
+
+
+
+* 	Added _MSL_TIME_T to for cross platform compatibility.
+
+	
+===============================================================================
+Bugs Fixed in MSL C Product Based
+===============================================================================
+
+
+*   _MSL_OS_TIME_SUPPORT define was a added to PREFIX_NITRO.h to resolve duplicate
+	time warning.
+
+*   feclearexcept, fegetexceptflag, feraiseexcept, fesetexcept, fetestexcept, 
+	fegetenv, fesetround, feholdexcept, fesetenv and feupdateenv in fenv.ppc.c 
+	have been fixed to conform to the C99 Standard.
+
+
+===============================================================================
+Known Issues
+===============================================================================
+
+
+
+===============================================================================
+
+Freescale Corporation

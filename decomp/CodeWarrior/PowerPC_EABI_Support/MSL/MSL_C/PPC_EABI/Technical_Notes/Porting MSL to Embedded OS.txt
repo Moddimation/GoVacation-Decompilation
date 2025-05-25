@@ -1,0 +1,85 @@
+========================================================================
+*                                                                      *
+*	Porting MSL to an Embedded OS                                      *
+*                                                                      *
+*                                                                      *
+*   07/24/97 - Mark Anderson                                           *
+*              Original release                                        *
+*                                                                      *
+*   10/07/97 - Ferry Sutanto                                           *
+*              Updated the file to reflect current filenames           *
+*                                                                      *
+========================================================================
+
+The MSL needs to be modified to support an Embedded OS.  
+
+1.	Duplicate "MSL_C\PPC_EABI\Project\MSL_C.PPCEABI.stub.mcp" and rename it to 
+	reflect the name of the OS.  Do the same thing with 
+	"MSL_C\PPC_EABI\Include\ansi_prefix.PPCEABI.stub.h".  For example, 
+	if your OS is called MyOS, then rename the files to 
+	"MSL_C.PPCEABI.MyOS.mcp" and ansi_prefix.PPCEABI.MyOS.h.  You 
+	probably will want to retain copies of the original files.  In the 
+	C/C++ Language preference panel of "MSL_C.PPCEABI.MyOS.mcp", you will 
+	need to replace the prefix file with ansi_prefix.PPCEABI.MyOS.h.
+	
+2.	You must remove the define for _Generic_PPC_EABI_OS in
+	ansi_prefix.PPCEABI.MyOS.h and replace it with a define to
+	represent your OS, such as _MyOS_PPC_EABI.
+	 
+3.	Read your documentation for your OS.  You need to determine whether
+	it has support for providing time, memory allocation, disk files.
+	You also need to determine if you will want to be able to read and
+	write to a console window during development.  In 
+	ansi_prefix.PPCEABI.MyOS.h you will want to comment out the 
+	following defines if such services are available in the OS.
+	
+		_No_Time_OS_Support
+		_No_Alloc_OS_Support
+		_No_Disk_File_OS_Support
+
+	If you do not want to have debugging information sent to a 
+	console window on the host machine, define _No_Console.  If you 
+	are using either SMC1_UART_PPCE_24.a or SMC2_UART_PPCE_24.a to read 
+	from or write to the console window, you need to define 
+	_Unbuffered_Console.
+	
+4.	OS dependent features of the MSL have been isolated into files
+	that you duplicate and rename.  You then insert into the
+	stub routines in these files OS system calls that fetch the
+	relevent information.  There is a stub file for each of the 
+	defines in 3, above.  Include a renamed stub file for each
+	of the defines in 3 above that you have commented out.  The
+	files are time.stub.c, pool_alloc.stub.c and file_io.stub.c.
+	When you rename these files, replace "stub" with "MyOS".
+	Remove the stub files from "MSL C.PPCEABI.MyOS.mcp" and
+	insert your OS specific replacement files.  
+	
+5.	Search "MSL C.PPCEABI.MyOS.mcp" for _Generic_PPC_EABI_OS.
+	Everywhere it is referenced, add an #elif _MyOS_PPC_EABI
+	and put whatever your system requires.
+	
+6.	At least look at the file critical_regions.ppc_eabi.c.  You
+	may need to modify it.
+
+7.	You may need to modify _ExitProcess in __ppc_eabi_init.c[pp]
+	to safely return your application to the OS.  __ppc_eabi_init.c[pp]
+	is found in the "PowerPC EABI Support" directory.
+	
+8.	You may need to modify the file sysenv.c.
+	
+9.	You may find other parts of the MSL that you need to modify.  If
+	so, please let us know.
+	
+========================================================================
+Contacting Freescale Developer Technology’s Support
+========================================================================
+
+For bug reports, technical questions, and suggestions, please use the
+Technical support link at http://www.freescale.com  
+
+Or log in and submit new reports or view the status of current reports. 
+
+========================================================================
+
+Mark Anderson
+Freescale Corporation

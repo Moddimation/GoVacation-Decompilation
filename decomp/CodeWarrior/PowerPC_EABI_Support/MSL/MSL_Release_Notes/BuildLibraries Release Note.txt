@@ -1,0 +1,85 @@
+== == == == == == == == == == == == == == == == == == == == == == == == == == == == == == == ==
+    == == == == == == ==
+    = Metrowerks CodeWarrior BuildLibraries Release Notes == == == == == == == == == == == == ==
+      == == == == == == == == == == == == == == == == == == == == == == == == == ==
+    =
+
+        Version : Pro 10 Date : August 16,
+    2005 Author : Josef W.Wankerl == == == == == == == == == == == == == == == == == == == == ==
+        == == == == == == == == == == == == == == == == == ==
+    =
+
+        BuildLibraries is designed to make building MSL C,
+    C++, and Runtime Libraries easier and faster.Better, stronger, faster,
+    and more powerful than ever before.We have the technology to rebuild them.
+
+        == == == == == == == == == == == == == == == == == == == == == == == == == == == == ==
+        == == == == == == == == == ==
+    = New Features Since Pro 8 == == == == == == == == == == == == == == == == == == == == == ==
+      == == == == == == == == == == == == == == == == ==
+    =
+
+        *None.
+
+        == == == == == == == == == == == == == == == == == == == == == == == == == == == == ==
+        == == == == == == == == == ==
+    = Bugs Fixed in this Version == == == == == == == == == == == == == == == == == == == == ==
+      == == == == == == == == == == == == == == == == == ==
+    =
+
+        *None.
+
+        == == == == == == == == == == == == == == == == == == == == == == == == == == == == ==
+        == == == == == == == == == ==
+    = Known Bugs and Incompatibilities in this Version == == == == == == == == == == == == == ==
+      == == == == == == == == == == == == == == == == == == == == == == == == ==
+    =
+
+        *None.
+
+        == == == == == == == == == == == == == == == == == == == == == == == == == == == == ==
+        == == == == == == == == == ==
+    = Additional Notes == == == == == == == == == == == == == == == == == == == == == == == ==
+      == == == == == == == == == == == == == == ==
+    =
+
+        *Building projects with the CodeWarrior IDE may require temporary memory from the Mac
+             OS.If this memory is not available,
+    Build MSL Libraires may present an alert stating that the IDE had problems building the
+        project.In this situation,
+    quitting applications other than the IDE will increase the available temporary memory from
+            the Mac OS.
+
+        Note that you may also receive the alert stating the IDE had problems building the
+            project if the compiler encountered erorrs or
+        issues warnings
+                .
+
+                    * If you have a partial install of
+                    CodeWarrior (i.e.you didn't install PPC or Mach - O or x86)
+                        then a build starting from the master top level project will
+            not complete successfully.You will need to tunnel down to the subprojects you have
+            installed (how to do this is discussed below) and
+            then build just the targets you're interested in.
+
+                * For finer granularity in building libraries with the new build projects,
+    you can navigate down through the project hierarchy until you get to the level of control
+    you desire.For example,
+    if you need to build only the PPC SIOUX libraries,
+    you could start at the main build project (BuildLibraries.mcp) and
+        then from there open the PowerPC master project (Build.MacOSPPC.mcp) and
+        then go to the Libraries and Runtimes project (BuildLibraries.PPC.mcp)
+            .Then you can finally get at the MSL SIOUX.mcp project and hit Make.
+
+        It sounds like a lot of steps to go through just build a couple of libraries,
+    but when you actually get your hands in it to do the work, it should make sense.Also,
+    if you know the desired final
+            - level project which actually builds the library you
+              want (e.g.MSL SIOUX.mcp) you could go directly to that project bypassing all the
+              intermediate steps.
+
+        == == == == == == == == == == == == == == == == == == == == == == == == == == == == ==
+        == == == == == == == == == ==
+    =
+
+        Freescale Corporation

@@ -1,0 +1,16 @@
+/* LCF file template for partial link files */
+
+SECTIONS
+{
+GROUP:
+    {
+        .init : {}.text : {}.ctors : {}.dtors : {}.rodata : {}.data
+          : { *(.data) * (extabindex) * (extab) }
+                .bss:
+        {}
+    }
+}
+FORCEACTIVE
+{
+    _unresolved _prolog _epilog
+}

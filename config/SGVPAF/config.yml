@@ -1,0 +1,12 @@
+name: gvn
+object_base: orig/SGVPAF
+object: sys/main.dol
+hash: c4320e3e1393d4829031257d0190b5a3b77c7a56
+symbols: config/SGVPAF/symbols.txt
+splits: config/SGVPAF/splits.txt
+write_asm: true
+mw_comment_version: 14
+
+quick_analysis: false
+detect_objects: true
+detect_strings: true

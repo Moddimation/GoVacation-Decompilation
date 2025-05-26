@@ -210,6 +210,7 @@ config.reconfig_deps = []
 # Can be overridden in libraries or objects
 config.scratch_preset_id = None
 
+# WIP Feature to specify separating by libraries
 config.nolib = [
     "*", # Leaving libraries unused for now, needs decomp to be finished
 ]
@@ -222,7 +223,6 @@ cflags_base = [
     "-align powerpc",
     "-enum int",
     "-fp hardware",
-    "-Cpp_exceptions on",
     "-W all",
     "-O4,p",
     '-pragma "cats off"',
@@ -241,11 +241,11 @@ cflags_base = [
 ]
 cflags_gc = [
     *cflags_base,
-    "-multibyte",
+#    "-multibyte",
 ]
 cflags_wii = [
     *cflags_base,
-    "-enc SJIS",
+#    "-enc SJIS",
 ]
 
 # Debug flags
@@ -258,6 +258,7 @@ else:
 # Metrowerks library flags
 cflags_cw = [
     *cflags_gc,
+    "-Cpp_exceptions off",
     "-use_lmw_stmw on",
     "-str reuse,pool,readonly",
     "-common off",
@@ -317,7 +318,7 @@ def CWLib(lib_name: str, sub_path: str, files: List[Tuple[bool, str]], conf: Dic
 
     return {
         "lib": lib_name,
-        "mw_version": "GC/3.0a3.4",
+        "mw_version": "GC/3.0a5",
         "cflags": __cflags,
         "progress_category": "cw",
         "src_dir": f".",

@@ -13,19 +13,17 @@ Sections:
 	.sbss2      type:bss align:16
 	.bss        type:bss align:64
 
-decomp/CodeWarrior/PowerPC_EABI_Support/Runtime/Src/__mem.c:
+CodeWarrior/PowerPC_EABI_Support/Runtime/Src/__mem.c:
 	.init       start:0x800043C4 end:0x80004744
 	.text       start:0x80142358 end:0x80142374
 
-decomp/CodeWarrior/PowerPC_EABI_Support/Runtime/Src/__va_arg.c:
-	.text       start:0x80142374 end:0x8014243C
-
-decomp/CodeWarrior/PowerPC_EABI_Support/Runtime/Src/global_destructor_chain.c:
+CodeWarrior/PowerPC_EABI_Support/Runtime/Src/global_destructor_chain.c:
 	.text       start:0x8014243C end:0x8014249C
 	.sbss       start:0x8019C660 end:0x8019C664
 
-decomp/CodeWarrior/PowerPC_EABI_Support/Runtime/Src/__init_cpp_exceptions.cpp:
+CodeWarrior/PowerPC_EABI_Support/Runtime/Src/__init_cpp_exceptions.cpp:
 	.text       start:0x801437FC end:0x8014386C
-	.ctors      start:0x8015BF40 end:0x8015BF44
-	.dtors      start:0x8015BFC0 end:0x8015BFC8
+	.ctors      start:0x8015BF40 end:0x8015BF44 rename:.ctors$10
+	.dtors      start:0x8015BFC0 end:0x8015BFC4 rename:.dtors$10
+	.dtors      start:0x8015BFC4 end:0x8015BFC8 rename:.dtors$15
 	.sdata      start:0x8019BAD8 end:0x8019BADC

@@ -237,7 +237,6 @@ cflags_base = [
     "-i decomp/CodeWarrior/**/INCLUDE",
     f"-i {config.build_dir}/{config.version}/include",
     f"-DVERSION_{config.version}",
-    #"-msgstyle IDE",
 ]
 cflags_gc = [
     *cflags_base,
@@ -276,9 +275,7 @@ cflags_rel = [
 cflags_paths_expand(cflags_base)
 cflags_paths_expand(cflags_cw)
 
-config.linker_version = "Wii/1.7"
-
-
+config.linker_version = "Wii/1.5"
 
 # Helper function for SDK libraries
 def SDKLib(lib_name: str, files: List[Tuple[bool, str]], lib_name_override: str="", conf: Dict[str,str]={"":""}) -> Dict[str, Any]:
@@ -286,18 +283,18 @@ def SDKLib(lib_name: str, files: List[Tuple[bool, str]], lib_name_override: str=
     if lib_name_override == "":
         lib_name_override = str
 
-    dirname = f"decomp/SDK/src/{lib_name}"
+    dirname = f"SDK/src/{lib_name}"
     for matching, filename in files:
         filepath = f"{dirname}/{filename}"
         objects.append(Object(matching, filepath))
 
-    __cflags = cflags_sdk + [f"-i {dirname}"]
+    __cflags = cflags_sdk + [f"-i decomp/{dirname}"]
 
     return {
         "lib": lib_name_override,
         "cflags": __cflags,
         "progress_category": "sdk",
-        "src_dir": ".",
+        "src_dir": "decomp",
         "objects": objects,
         **conf
     }
@@ -309,19 +306,19 @@ def RevolutionLib(lib_name: str, files: List[Tuple[bool, str]], conf:Dict[str,st
 # Helper function for CodeWarrior runtime libraries
 def CWLib(lib_name: str, sub_path: str, files: List[Tuple[bool, str]], conf: Dict[str, str]={"":""}) -> Dict[str, Any]:
     objects = []
-    dirpath = f"decomp/CodeWarrior/PowerPC_EABI_Support/{sub_path}"
+    dirpath = f"CodeWarrior/PowerPC_EABI_Support/{sub_path}"
     for matching, filename in files:
         filepath = f"{dirpath}/{filename}"
         objects.append(Object(matching, filepath))
 
-    __cflags = cflags_cw + [f"-i {dirpath}"]
+    __cflags = cflags_cw + [f"-i decomp/{dirpath}"]
 
     return {
         "lib": lib_name,
         "mw_version": "GC/3.0a5",
         "cflags": __cflags,
         "progress_category": "cw",
-        "src_dir": f".",
+        "src_dir": f"decomp",
         "objects": objects,
         **conf
     }
@@ -332,6 +329,7 @@ def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "lib": lib_name,
         "cflags": cflags_rel,
         "progress_category": "game",
+        "src_dir": f"decomp",
         "objects": objects,
     }
 
@@ -358,11 +356,6 @@ config.libs = [
         (Matching, "__mem.c"),
         (Matching, "global_destructor_chain.c"),
     ]),
-    CWLib("Runtime.PPCEABI.H", "Runtime/Src", [
-        (Matching, "__va_arg.c"),
-    ],{
-        "mw_version": "Wii/1.0",
-    }),
     
 ]
 

@@ -7,6 +7,6 @@ splits: config/SGVEAF_D/splits.txt
 write_asm: true
 mw_comment_version: 14
 
-quick_analysis: false
+quick_analysis: true
 detect_objects: true
 detect_strings: true

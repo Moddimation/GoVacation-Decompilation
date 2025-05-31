@@ -17,6 +17,9 @@ CodeWarrior/PowerPC_EABI_Support/Runtime/Src/__mem.c:
 	.init       start:0x800043C4 end:0x80004744
 	.text       start:0x80142358 end:0x80142374
 
+CodeWarrior/PowerPC_EABI_Support/Runtime/Src/__va_arg.c:
+	.text       start:0x80142374 end:0x8014243C
+
 CodeWarrior/PowerPC_EABI_Support/Runtime/Src/global_destructor_chain.c:
 	.text       start:0x8014243C end:0x8014249C
 	.sbss       start:0x8019C660 end:0x8019C664

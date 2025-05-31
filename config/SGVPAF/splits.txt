@@ -4,11 +4,18 @@ Sections:
 	extabindex  type:rodata align:16
 	.text       type:code align:32
 	.ctors      type:rodata align:32
-	.dtors      type:rodata align:32
+	.dtors      type:rodata align:4
 	.rodata     type:rodata align:32
-	.data       type:data align:32
-	.sdata      type:data align:32
-	.sbss       type:bss align:16
-	.sdata2     type:rodata align:32
+	.data       type:data align:4
+	.sdata      type:data align:16
+	.sbss       type:bss align:32
+	.sdata2     type:rodata align:16
 	.sbss2      type:bss align:16
-	.bss        type:bss align:64
+	.bss        type:bss align:16
+
+CodeWarrior/PowerPC_EABI_Support/Runtime/Src/__init_cpp_exceptions.cpp:
+	.text       start:0x80129690 end:0x80129700
+	.ctors      start:0x80141980 end:0x80141984 rename:.ctors$10
+	.dtors      start:0x801419E0 end:0x801419E4 rename:.dtors$10
+	.dtors      start:0x801419E4 end:0x801419E8 rename:.dtors$15
+	.sdata      start:0x80185D78 end:0x80185D80

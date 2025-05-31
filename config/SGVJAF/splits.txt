@@ -12,3 +12,10 @@ Sections:
 	.sdata2     type:rodata align:32
 	.sbss2      type:bss align:16
 	.bss        type:bss align:64
+
+CodeWarrior/PowerPC_EABI_Support/Runtime/Src/__init_cpp_exceptions.cpp:
+	.text       start:0x80129620 end:0x80129690
+	.ctors      start:0x80141900 end:0x80141904 rename:.ctors$10
+	.dtors      start:0x80141960 end:0x80141964 rename:.dtors$10
+	.dtors      start:0x80141964 end:0x80141968 rename:.dtors$15
+	.sdata      start:0x80175A58 end:0x80175A60

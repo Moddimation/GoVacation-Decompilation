@@ -260,8 +260,10 @@ cflags_cw = [
     "-Cpp_exceptions off",
     "-use_lmw_stmw on",
     "-str reuse,pool,readonly",
+    "-gccinc",
     "-common off",
     "-inline auto",
+    "-func_align 4",
 ]
 
 # REL flags
@@ -352,7 +354,7 @@ config.libs = [
     # CodeWarrior
 
     CWLib("Runtime.PPCEABI.H", "Runtime/Src", [
-        (Matching, "__init_cpp_exceptions.cpp"),
+        (NonMatching, "__init_cpp_exceptions.cpp"),
         (Matching, "__mem.c"),
         (Matching, "global_destructor_chain.c"),
     ]),

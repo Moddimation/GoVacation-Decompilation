@@ -240,11 +240,11 @@ cflags_base = [
 ]
 cflags_gc = [
     *cflags_base,
-#    "-multibyte",
+    "-multibyte",
 ]
 cflags_wii = [
     *cflags_base,
-#    "-enc SJIS",
+    "-enc SJIS",
 ]
 
 # Debug flags

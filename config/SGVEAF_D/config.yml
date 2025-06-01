@@ -5,7 +5,8 @@ hash: 54dfe8f178773b290746f7719c52a215d9390ae6
 symbols: config/SGVEAF_D/symbols.txt
 splits: config/SGVEAF_D/splits.txt
 write_asm: true
-mw_comment_version: 14
+mw_comment_version: 15
+ldscript_template: config/ldscript.lcf
 
 quick_analysis: true
 detect_objects: true

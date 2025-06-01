@@ -6,7 +6,7 @@ symbols: config/SGVEAF_D/symbols.txt
 splits: config/SGVEAF_D/splits.txt
 write_asm: true
 mw_comment_version: 15
-ldscript_template: config/ldscript.lcf
+ldscript_template: config/SGVEAF_D/ldscript.lcf
 
 quick_analysis: true
 detect_objects: true

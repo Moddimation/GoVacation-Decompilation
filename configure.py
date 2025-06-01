@@ -383,7 +383,9 @@ config.libs = [
 # Adjust as desired for your project
 config.progress_categories = [
     ProgressCategory("game", "Main Game"),
-    ProgressCategory("lib", "Libraries"),
+    ProgressCategory("havoc", "Havoc MiddleWare"),
+    ProgressCategory("nw4r", "NintendoWare"),
+    ProgressCategory("lib", "Misc Libraries"),
     ProgressCategory("sdk", "Revolution SDK"),
     ProgressCategory("cw", "CodeWarrior Runtime"),
 ]

@@ -6,6 +6,7 @@ symbols: config/SGVJAF/symbols.txt
 splits: config/SGVJAF/splits.txt
 write_asm: true
 mw_comment_version: 14
+ldscript_template: config/SGVJAF/ldscript.lcf
 
 quick_analysis: true
 detect_objects: true

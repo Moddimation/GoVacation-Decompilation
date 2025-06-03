@@ -125,9 +125,9 @@ parser.add_argument(
     help="disable progress calculation",
 )
 parser.add_argument(
-    "--action"
+    "--action",
     dest="action",
-    action"store_false",
+    action="store_false",
     help="specifies CI action build, do not use manually.",
 )
 args = parser.parse_args()

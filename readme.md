@@ -5,4 +5,7 @@ I have a personal school life, so I will not work on this every day. Patience is
 <br>
 Discord: moddimation
 
-I have plans to restructure my (yet new) discord server as a hub for my projects.
+I have plans to restructure my (yet new) discord server as a hub for my projects, check Moddimation/Yasiki for further links, for now.  
+  <br>
+  <br>
+~Moddimation

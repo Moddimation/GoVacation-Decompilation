@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    container: ghcr.io/moddimation/gvn-build:master
+    container: ghcr.io/moddimation/gvn-build:main
 
     runs-on: ubuntu-latest
     strategy:

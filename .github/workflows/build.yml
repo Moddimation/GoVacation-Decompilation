@@ -1,28 +1,29 @@
-name: Build
+name: Build game
 
 on:
   push:
+    branches:
+      - master
   pull_request:
+    branches:
+      - master
 
 jobs:
   build:
-    # This is a *private* build container.
-    # See docs/github_actions.md for more information.
-    container: ghcr.io/my/game-build:main
+    container: ghcr.io/moddimation/gvn-build:master
 
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # Add game versions here
-        version: [GAMEID]
+        version: [SGVEAF_D, SGVEAF, SGVJAF, SGVPAF]
 
     steps:
     # Checkout the repository
     - name: Checkout
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
+#      with:
+#        submodules: recursive
 
     # Set Git config
     - name: Git config
@@ -35,9 +36,10 @@ jobs:
     # Build the project
     - name: Build
       run: |
-        python configure.py --map --version ${{ matrix.version }} \
+        python configure.py --action --map --version ${{ matrix.version }} \
             --binutils /binutils --compilers /compilers
-        ninja all_source progress build/${{ matrix.version }}/report.json
+        ninja all_source build/${{ matrix.version }}/progress.json \
+            build/${{ matrix.version }}/report.json
 
     # Upload map files
     - name: Upload map

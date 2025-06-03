@@ -124,6 +124,12 @@ parser.add_argument(
     action="store_false",
     help="disable progress calculation",
 )
+parser.add_argument(
+    "--action"
+    dest="action",
+    action"store_false",
+    help="specifies CI action build, do not use manually.",
+)
 args = parser.parse_args()
 
 config = ProjectConfig()
@@ -238,6 +244,19 @@ cflags_base = [
     f"-i {config.build_dir}/{config.version}/include",
     f"-DVERSION_{config.version}",
 ]
+
+# Debug flags
+if args.debug:
+    # Or -sym dwarf-2 for Wii compilers
+    cflags_base.extend(["-sym on", "-DDEBUG=1"])
+else:
+    cflags_base.append("-DNDEBUG=1")
+
+# Github actions toggle
+if args.action:
+    cflags_base.extend("-DGH_ACTIONS")
+
+#
 cflags_gc = [
     *cflags_base,
     "-multibyte",
@@ -246,13 +265,6 @@ cflags_wii = [
     *cflags_base,
     "-enc SJIS",
 ]
-
-# Debug flags
-if args.debug:
-    # Or -sym dwarf-2 for Wii compilers
-    cflags_base.extend(["-sym on", "-DDEBUG=1"])
-else:
-    cflags_base.append("-DNDEBUG=1")
 
 # Metrowerks library flags
 cflags_cw = [
